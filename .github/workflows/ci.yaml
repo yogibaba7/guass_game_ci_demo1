@@ -2,13 +2,24 @@ name : ci-pipeline
 
 on : push
 
+# activation only when we push in main branch
+# on : 
+#   push :
+#     branches :
+#       - main
+
+# activation when we make pull_request
+# on :
+#   pull_request
+  
+
 jobs:
   linting:
-    runs-on : ${{matrix.os}}
-    strategy:
-      matrix:
-        os : ['ubuntu-latest','windows-latest','macos-latest']
-      
+    runs-on : ubuntu-latest # just change with this for run on multple os ${{matrix.os}}
+    # strategy:
+    #   matrix:
+    #     os : ['ubuntu-latest','windows-latest','macos-latest']
+    #     versions : ['3.9','3.10','3.11']
 
     steps:
       - name : code checkout
@@ -17,7 +28,7 @@ jobs:
       - name : setup python
         uses : actions/setup-python@v2
         with :
-          python-version : "3.10"
+          python-version : "3.10" # just change with ${{matrix.versions}} for run on multiple version of python
       - name : install flake8
         run : |
           python -m pip install --upgrade pip
@@ -26,3 +37,17 @@ jobs:
       - name : run flake8
         run : |
           flake8 app.py
+  
+  testing:
+    runs-on : ubuntu-latest
+
+    steps :
+      - name : code checkout
+        uses: actions/checkout@v3
+
+      - name : setup python
+        uses : actions/setup-python@v2
+
+      - name : run unittest
+        run : |
+          python -m unittest discover
